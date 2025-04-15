@@ -175,10 +175,10 @@ func (u UserMateRepo) AddLevel(ctx context.Context, level *biz.LevelRequest) err
 	u.log.WithContext(ctx).Infof("add level : %v", level)
 	var levelinfo *model.UserMateLevel
 	levelinfo = &model.UserMateLevel{
-		Level:     level.Level,
+		Level:     int8(level.Level),
 		LevelName: level.LevelName,
-		Status:    level.Status,
-		Radio:     level.Radio,
+		Status:    int8(level.Status),
+		Radio:     int8(level.Radio),
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
@@ -192,10 +192,10 @@ func (u UserMateRepo) AddLevel(ctx context.Context, level *biz.LevelRequest) err
 func (u UserMateRepo) AddServiceCategory(ctx context.Context, category *biz.ServiceCategoryRequest) error {
 	u.log.WithContext(ctx).Infof("add service category ")
 	categoryInfo := &model.ServerCategory{
-		ParentID:     category.ParentId,
+		ParentID:     int8(category.ParentId),
 		CategoryName: category.CategoryName,
-		BaseAmount:   category.BaseAmount,
-		Status:       category.Status,
+		BaseAmount:   int8(category.BaseAmount),
+		Status:       int8(category.Status),
 		CreatedAt:    time.Now(),
 		UpdatedAt:    time.Now(),
 	}
