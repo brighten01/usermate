@@ -93,8 +93,7 @@ service UserMate {
     };
   };
 
-
-  rpc AddServiceCategory(ServiceCategoryRequest)  returns(ServiceCategoryResponse  ){
+  rpc AddServiceCategory(ServiceCategoryRequest)  returns(ServiceCategoryResponse){
     option(google.api.http)= {
       post:"/api/v1/category/create",
       body:"*"
@@ -324,9 +323,10 @@ message  LevelResponse {
 
 //其余字段算出
 message ServiceCategoryRequest {
-  string category_name =1 ;
-  int32 parent_id =2;
-  int32 status=3;
+   string category_name =1;
+  int32 base_amount =2;
+  int32 parent_id=3;
+   int32 status=4;
 }
 
 message ServiceCategoryResponse {

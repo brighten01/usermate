@@ -170,3 +170,38 @@ func (u UserMateRepo) OrderDetail(ctx context.Context, order_id string) (*model.
 	result := u.data.db.Where("order_id = ?", order_id).First(&orderDetail)
 	return &orderDetail, result.Error
 }
+
+func (u UserMateRepo) AddLevel(ctx context.Context, level *biz.LevelRequest) error {
+	u.log.WithContext(ctx).Infof("add level : %v", level)
+	var levelinfo *model.UserMateLevel
+	levelinfo = &model.UserMateLevel{
+		Level:     level.Level,
+		LevelName: level.LevelName,
+		Status:    level.Status,
+		Radio:     level.Radio,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+	result := u.data.db.Create(levelinfo)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}
+
+func (u UserMateRepo) AddServiceCategory(ctx context.Context, category *biz.ServiceCategoryRequest) error {
+	u.log.WithContext(ctx).Infof("add service category ")
+	categoryInfo := &model.ServerCategory{
+		ParentID:     category.ParentId,
+		CategoryName: category.CategoryName,
+		BaseAmount:   category.BaseAmount,
+		Status:       category.Status,
+		CreatedAt:    time.Now(),
+		UpdatedAt:    time.Now(),
+	}
+	result := u.data.db.Create(categoryInfo)
+	if result.Error != nil {
+		return result.Error
+	}
+	return nil
+}

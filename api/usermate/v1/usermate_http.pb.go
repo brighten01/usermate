@@ -19,6 +19,8 @@ var _ = binding.EncodeURL
 
 const _ = http.SupportPackageIsVersion1
 
+const OperationUserMateAddLevel = "/usermate.v1.UserMate/AddLevel"
+const OperationUserMateAddServiceCategory = "/usermate.v1.UserMate/AddServiceCategory"
 const OperationUserMateAddUserMate = "/usermate.v1.UserMate/AddUserMate"
 const OperationUserMateCreateOrder = "/usermate.v1.UserMate/CreateOrder"
 const OperationUserMateDeleteUserMate = "/usermate.v1.UserMate/DeleteUserMate"
@@ -31,6 +33,8 @@ const OperationUserMateUpdateUserMate = "/usermate.v1.UserMate/UpdateUserMate"
 const OperationUserMateUserMateDetail = "/usermate.v1.UserMate/UserMateDetail"
 
 type UserMateHTTPServer interface {
+	AddLevel(context.Context, *LevelRequest) (*LevelResponse, error)
+	AddServiceCategory(context.Context, *ServiceCategoryRequest) (*ServiceCategoryResponse, error)
 	// AddUserMate user mate add
 	AddUserMate(context.Context, *UserMateRequest) (*UserMateReply, error)
 	// CreateOrdercreate order
@@ -64,6 +68,8 @@ func RegisterUserMateHTTPServer(s *http.Server, srv UserMateHTTPServer) {
 	r.POST("/api/v1/order/update", _UserMate_UpdateOrder0_HTTP_Handler(srv))
 	r.POST("/api/v1/order/list", _UserMate_OrderList0_HTTP_Handler(srv))
 	r.POST("/api/v1/order/detail", _UserMate_OrderDetail0_HTTP_Handler(srv))
+	r.POST("/api/v1/level/create", _UserMate_AddLevel0_HTTP_Handler(srv))
+	r.POST("/api/v1/category/create", _UserMate_AddServiceCategory0_HTTP_Handler(srv))
 }
 
 func _UserMate_AddUserMate0_HTTP_Handler(srv UserMateHTTPServer) func(ctx http.Context) error {
@@ -283,7 +289,53 @@ func _UserMate_OrderDetail0_HTTP_Handler(srv UserMateHTTPServer) func(ctx http.C
 	}
 }
 
+func _UserMate_AddLevel0_HTTP_Handler(srv UserMateHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in LevelRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserMateAddLevel)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.AddLevel(ctx, req.(*LevelRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*LevelResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
+func _UserMate_AddServiceCategory0_HTTP_Handler(srv UserMateHTTPServer) func(ctx http.Context) error {
+	return func(ctx http.Context) error {
+		var in ServiceCategoryRequest
+		if err := ctx.Bind(&in); err != nil {
+			return err
+		}
+		if err := ctx.BindQuery(&in); err != nil {
+			return err
+		}
+		http.SetOperation(ctx, OperationUserMateAddServiceCategory)
+		h := ctx.Middleware(func(ctx context.Context, req interface{}) (interface{}, error) {
+			return srv.AddServiceCategory(ctx, req.(*ServiceCategoryRequest))
+		})
+		out, err := h(ctx, &in)
+		if err != nil {
+			return err
+		}
+		reply := out.(*ServiceCategoryResponse)
+		return ctx.Result(200, reply)
+	}
+}
+
 type UserMateHTTPClient interface {
+	AddLevel(ctx context.Context, req *LevelRequest, opts ...http.CallOption) (rsp *LevelResponse, err error)
+	AddServiceCategory(ctx context.Context, req *ServiceCategoryRequest, opts ...http.CallOption) (rsp *ServiceCategoryResponse, err error)
 	AddUserMate(ctx context.Context, req *UserMateRequest, opts ...http.CallOption) (rsp *UserMateReply, err error)
 	CreateOrder(ctx context.Context, req *CreateOrderRequest, opts ...http.CallOption) (rsp *CreateOrderReply, err error)
 	DeleteUserMate(ctx context.Context, req *DeleteMateRequest, opts ...http.CallOption) (rsp *DeleteMateReply, err error)
@@ -302,6 +354,32 @@ type UserMateHTTPClientImpl struct {
 
 func NewUserMateHTTPClient(client *http.Client) UserMateHTTPClient {
 	return &UserMateHTTPClientImpl{client}
+}
+
+func (c *UserMateHTTPClientImpl) AddLevel(ctx context.Context, in *LevelRequest, opts ...http.CallOption) (*LevelResponse, error) {
+	var out LevelResponse
+	pattern := "/api/v1/level/create"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserMateAddLevel))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
+}
+
+func (c *UserMateHTTPClientImpl) AddServiceCategory(ctx context.Context, in *ServiceCategoryRequest, opts ...http.CallOption) (*ServiceCategoryResponse, error) {
+	var out ServiceCategoryResponse
+	pattern := "/api/v1/category/create"
+	path := binding.EncodeURL(pattern, in, false)
+	opts = append(opts, http.Operation(OperationUserMateAddServiceCategory))
+	opts = append(opts, http.PathTemplate(pattern))
+	err := c.cc.Invoke(ctx, "POST", path, in, &out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &out, nil
 }
 
 func (c *UserMateHTTPClientImpl) AddUserMate(ctx context.Context, in *UserMateRequest, opts ...http.CallOption) (*UserMateReply, error) {

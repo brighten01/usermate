@@ -83,8 +83,18 @@ type UpdateOrderInfo struct {
 }
 
 type LevelRequest struct {
+	Level     int32  `json:"level"`
+	LevelName string `json:"level_name"`
+	Status    int32  `json:"status"`
+	Radio     int32  `json:"radio"`
 }
 
+type ServiceCategoryRequest struct {
+	CategoryName string `json:"category_name"`
+	BaseAmount   int32  `json:"base_amount"`
+	ParentId     int32  `json:"parent_id"`
+	Status       int32  `json:"status"`
+}
 type UserMateRepo interface {
 	AddUserMate(ctx context.Context, addmate AddMateRequest) (AddMateResponse, error)
 	UserMateList(ctx context.Context, pageno int32, pagesize int32) ([]*model.UserMate, error)
@@ -96,7 +106,8 @@ type UserMateRepo interface {
 	UpdateOrder(ctx context.Context, orderUpdate *UpdateOrderInfo) (id int64, order_id string, err error)
 	OrderList(ctx context.Context, pageno int32, pagesize int32) ([]*model.OrderList, error)
 	OrderDetail(ctx context.Context, order_id string) (*model.OrderList, error)
-	AddLevel(ctx context.Context)
+	AddLevel(ctx context.Context, levelinfo *LevelRequest) error
+	AddServiceCategory(ctx context.Context, category *ServiceCategoryRequest) error
 }
 
 type UserMateUsecase struct {
@@ -158,4 +169,14 @@ func (uc *UserMateUsecase) OrderList(ctx context.Context, pageno int32, pagesize
 func (uc *UserMateUsecase) OrderDetail(ctx context.Context, order_id string) (*model.OrderList, error) {
 	uc.log.WithContext(ctx).Infof("OrderDetail: %v", order_id)
 	return uc.repo.OrderDetail(ctx, order_id)
+}
+
+func (uc *UserMateUsecase) AddLevel(ctx context.Context, request *LevelRequest) error {
+	uc.log.WithContext(ctx).Infof("level: %v", request)
+	return uc.repo.AddLevel(ctx, request)
+}
+
+func (uc *UserMateUsecase) AddServiceCategory(ctx context.Context, category *ServiceCategoryRequest) error {
+	uc.log.WithContext(ctx).Infof("level: %v", category)
+	return uc.repo.AddServiceCategory(ctx, category)
 }

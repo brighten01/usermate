@@ -137,7 +137,6 @@ func (s *UserMateService) ListUserMate(ctx context.Context, req *pb.ListMateRequ
 	if err != nil {
 		return &pb.ListMateResponse{}, err
 	}
-
 	userMateList := make([]*pb.UserMateInfo, 0)
 	for _, userMate := range response {
 		userMateList = append(userMateList, &pb.UserMateInfo{
@@ -294,5 +293,42 @@ func (s *UserMateService) OrderDetail(ctx context.Context, req *pb.OrderDetailRe
 		Nickname:            response.Nickname,
 		Avatar:              response.Avatar,
 		LinkUrl:             response.LinkURL,
+	}, nil
+}
+
+func (s *UserMateService) AddLevel(ctx context.Context, level *pb.LevelRequest) (*pb.LevelResponse, error) {
+	levelRequest := &biz.LevelRequest{
+		Level:     level.Level,
+		LevelName: level.LevelName,
+		Status:    level.Status,
+		Radio:     level.Radios,
+	}
+	error := s.uc.AddLevel(ctx, levelRequest)
+	if error != nil {
+		return &pb.LevelResponse{}, nil
+	}
+	return &pb.LevelResponse{
+		Code:    200,
+		Message: "success",
+	}, nil
+}
+
+func (s *UserMateService) AddServiceCategory(ctx context.Context, category *pb.ServiceCategoryRequest) (*pb.ServiceCategoryResponse, error) {
+	categoryRequest := &biz.ServiceCategoryRequest{
+		CategoryName: category.CategoryName,
+		BaseAmount:   category.BaseAmount,
+		ParentId:     category.ParentId,
+		Status:       category.Status,
+	}
+	err := s.uc.AddServiceCategory(ctx, categoryRequest)
+	if err != nil {
+		return &pb.ServiceCategoryResponse{
+			Code:    500,
+			Message: "failed",
+		}, err
+	}
+	return &pb.ServiceCategoryResponse{
+		Code:    200,
+		Message: "success",
 	}, nil
 }

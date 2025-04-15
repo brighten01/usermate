@@ -19,16 +19,18 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	UserMate_AddUserMate_FullMethodName    = "/usermate.v1.UserMate/AddUserMate"
-	UserMate_DeleteUserMate_FullMethodName = "/usermate.v1.UserMate/DeleteUserMate"
-	UserMate_UserMateDetail_FullMethodName = "/usermate.v1.UserMate/UserMateDetail"
-	UserMate_UpdateUserMate_FullMethodName = "/usermate.v1.UserMate/UpdateUserMate"
-	UserMate_ListUserMate_FullMethodName   = "/usermate.v1.UserMate/ListUserMate"
-	UserMate_SearchUserMate_FullMethodName = "/usermate.v1.UserMate/SearchUserMate"
-	UserMate_CreateOrder_FullMethodName    = "/usermate.v1.UserMate/CreateOrder"
-	UserMate_UpdateOrder_FullMethodName    = "/usermate.v1.UserMate/UpdateOrder"
-	UserMate_OrderList_FullMethodName      = "/usermate.v1.UserMate/OrderList"
-	UserMate_OrderDetail_FullMethodName    = "/usermate.v1.UserMate/OrderDetail"
+	UserMate_AddUserMate_FullMethodName        = "/usermate.v1.UserMate/AddUserMate"
+	UserMate_DeleteUserMate_FullMethodName     = "/usermate.v1.UserMate/DeleteUserMate"
+	UserMate_UserMateDetail_FullMethodName     = "/usermate.v1.UserMate/UserMateDetail"
+	UserMate_UpdateUserMate_FullMethodName     = "/usermate.v1.UserMate/UpdateUserMate"
+	UserMate_ListUserMate_FullMethodName       = "/usermate.v1.UserMate/ListUserMate"
+	UserMate_SearchUserMate_FullMethodName     = "/usermate.v1.UserMate/SearchUserMate"
+	UserMate_CreateOrder_FullMethodName        = "/usermate.v1.UserMate/CreateOrder"
+	UserMate_UpdateOrder_FullMethodName        = "/usermate.v1.UserMate/UpdateOrder"
+	UserMate_OrderList_FullMethodName          = "/usermate.v1.UserMate/OrderList"
+	UserMate_OrderDetail_FullMethodName        = "/usermate.v1.UserMate/OrderDetail"
+	UserMate_AddLevel_FullMethodName           = "/usermate.v1.UserMate/AddLevel"
+	UserMate_AddServiceCategory_FullMethodName = "/usermate.v1.UserMate/AddServiceCategory"
 )
 
 // UserMateClient is the client API for UserMate service.
@@ -54,6 +56,8 @@ type UserMateClient interface {
 	OrderList(ctx context.Context, in *OrderListRequest, opts ...grpc.CallOption) (*OrderListResponse, error)
 	// order detail
 	OrderDetail(ctx context.Context, in *OrderDetailRequest, opts ...grpc.CallOption) (*OrderDetailResponse, error)
+	AddLevel(ctx context.Context, in *LevelRequest, opts ...grpc.CallOption) (*LevelResponse, error)
+	AddServiceCategory(ctx context.Context, in *ServiceCategoryRequest, opts ...grpc.CallOption) (*ServiceCategoryResponse, error)
 }
 
 type userMateClient struct {
@@ -154,6 +158,24 @@ func (c *userMateClient) OrderDetail(ctx context.Context, in *OrderDetailRequest
 	return out, nil
 }
 
+func (c *userMateClient) AddLevel(ctx context.Context, in *LevelRequest, opts ...grpc.CallOption) (*LevelResponse, error) {
+	out := new(LevelResponse)
+	err := c.cc.Invoke(ctx, UserMate_AddLevel_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *userMateClient) AddServiceCategory(ctx context.Context, in *ServiceCategoryRequest, opts ...grpc.CallOption) (*ServiceCategoryResponse, error) {
+	out := new(ServiceCategoryResponse)
+	err := c.cc.Invoke(ctx, UserMate_AddServiceCategory_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // UserMateServer is the server API for UserMate service.
 // All implementations must embed UnimplementedUserMateServer
 // for forward compatibility
@@ -177,6 +199,8 @@ type UserMateServer interface {
 	OrderList(context.Context, *OrderListRequest) (*OrderListResponse, error)
 	// order detail
 	OrderDetail(context.Context, *OrderDetailRequest) (*OrderDetailResponse, error)
+	AddLevel(context.Context, *LevelRequest) (*LevelResponse, error)
+	AddServiceCategory(context.Context, *ServiceCategoryRequest) (*ServiceCategoryResponse, error)
 	mustEmbedUnimplementedUserMateServer()
 }
 
@@ -213,6 +237,12 @@ func (UnimplementedUserMateServer) OrderList(context.Context, *OrderListRequest)
 }
 func (UnimplementedUserMateServer) OrderDetail(context.Context, *OrderDetailRequest) (*OrderDetailResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method OrderDetail not implemented")
+}
+func (UnimplementedUserMateServer) AddLevel(context.Context, *LevelRequest) (*LevelResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddLevel not implemented")
+}
+func (UnimplementedUserMateServer) AddServiceCategory(context.Context, *ServiceCategoryRequest) (*ServiceCategoryResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddServiceCategory not implemented")
 }
 func (UnimplementedUserMateServer) mustEmbedUnimplementedUserMateServer() {}
 
@@ -407,6 +437,42 @@ func _UserMate_OrderDetail_Handler(srv interface{}, ctx context.Context, dec fun
 	return interceptor(ctx, in, info, handler)
 }
 
+func _UserMate_AddLevel_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(LevelRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserMateServer).AddLevel(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserMate_AddLevel_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserMateServer).AddLevel(ctx, req.(*LevelRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _UserMate_AddServiceCategory_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ServiceCategoryRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(UserMateServer).AddServiceCategory(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: UserMate_AddServiceCategory_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(UserMateServer).AddServiceCategory(ctx, req.(*ServiceCategoryRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // UserMate_ServiceDesc is the grpc.ServiceDesc for UserMate service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -453,6 +519,14 @@ var UserMate_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "OrderDetail",
 			Handler:    _UserMate_OrderDetail_Handler,
+		},
+		{
+			MethodName: "AddLevel",
+			Handler:    _UserMate_AddLevel_Handler,
+		},
+		{
+			MethodName: "AddServiceCategory",
+			Handler:    _UserMate_AddServiceCategory_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
