@@ -1,0 +1,296 @@
+syntax = "proto3";
+
+package usermate.v1;
+
+import "google/api/annotations.proto";
+option go_package = "usermate/api/usermate/v1;v1";
+option java_multiple_files = true;
+option java_package = "dev.kratos.api.usermate.v1";
+option java_outer_classname = "UserMateProtoV1";
+
+// The greeting service definition.
+service UserMate {
+  // user mate add 
+  rpc AddUserMate (UserMateRequest) returns (UserMateReply) {
+    option (google.api.http) = {
+      post: "/api/v1/usermate/add"
+      body:"*"
+    };
+  };
+
+  //user mate delete 
+  rpc DeleteUserMate (DeleteMateRequest) returns (DeleteMateReply){
+    option(google.api.http) = {
+      get: "/api/v1/mate/delete/{id}"
+    };
+  }
+
+  //user mates detail show 
+  rpc UserMateDetail (UserMateShowRequest) returns (UserMateShowReply) {
+    option(google.api.http) = {
+      get:"/api/v1/mate/detail/{id}"
+    };
+  }
+
+  //user mate update data
+  rpc UpdateUserMate (UserMateUpdateRequest) returns (UserMateUpdateReply) {
+    option (google.api.http) = {
+      post: "/api/v1/usermate/update"
+      body:"*"
+    };
+  }
+
+  //usermate list
+  rpc ListUserMate (ListMateRequest) returns (ListMateResponse) {
+    option (google.api.http) = {
+      get:"/api/v1/usermate/list"
+    };
+  };
+
+  rpc SearchUserMate (SearchUserMateRequest) returns (SearchUserMateResponse) {
+    option (google.api.http) = {
+      get:"/api/v1/usermate/search/{name}"
+    };
+  };
+
+
+  //create order 
+  rpc CreateOrder (CreateOrderRequest)  returns  (CreateOrderReply){
+    option (google.api.http) = {
+      post:"/api/v1/order/create"
+      body:"*"
+    };
+  };
+
+  //update order 
+  rpc UpdateOrder (UpdateOrderRequest) returns (UpdateOrderReply){
+    option (google.api.http) = {
+      post:"/api/v1/order/update",
+      body:"*"
+    };
+  };
+
+  //order list
+  rpc OrderList (OrderListRequest) returns (OrderListResponse){
+    option(google.api.http) = {
+      post:"/api/v1/order/list"
+      body:"*"
+    } ;
+  };
+
+  //order detail
+  rpc OrderDetail (OrderDetailRequest) returns (OrderDetailResponse){
+    option (google.api.http) = {
+      post:"/api/v1/order/detail"
+      body:"*"
+    };
+  };
+
+
+}
+
+
+message DeleteMateRequest{
+  int32 id = 1;
+}
+
+message DeleteMateReply {
+  Reply reply = 1;
+}
+
+message UserMateShowRequest {
+  string username = 1;
+  int32  id = 2;
+}
+
+message UserMateShowReply {
+  UserMateInfo  mateinfo = 1;
+}
+
+
+message UserMateReply{
+  Reply reply = 1;
+}
+
+
+message Reply {
+  int32 code = 1;
+  string message = 2;
+
+}
+
+//用户详情
+message UserMateInfo {
+  string username = 1;
+  int32 group_id = 2;
+  string real_name = 3;
+  string tags = 4;
+  string birthday = 5;
+  string hobby = 6;
+  string avatar = 7;
+  string nickname = 8;
+  string images = 9;
+  int32 age = 10;
+  string province = 11;
+  string sign = 12;
+  string videourl = 13;
+  string favorates = 14;
+  int32 is_online = 15;
+  int32 is_employee = 16;
+  int32 is_approv = 18;
+  int32 is_deleted = 19;
+  string createdAt = 20;
+  string  updateAt = 21;
+
+}
+
+//添加用户
+message UserMateRequest{
+  string username = 1;
+  int32 group_id = 2;
+  string real_name = 3;
+  string tags = 4;
+  string birthday = 5;
+  string hobby = 6;
+  string avatar = 7;
+  string nickname = 8;
+  string images = 9;
+  int32 age = 10;
+  string province = 11;
+  string sign = 12;
+  string videourl = 13;
+  string favorates = 14;
+  int32 is_online = 15;
+  int32 is_employee = 16;
+  int32 is_approv = 18;
+}
+//更新用户请求
+message UserMateUpdateRequest {
+  string username = 1;
+  int32 group_id = 2;
+  string real_name = 3;
+  string tags = 4;
+  string birthday = 5;
+  string hobby = 6;
+  string avatar = 7;
+  string nickname = 8;
+  string images = 9;
+  int32 age = 10;
+  string province = 11;
+  string sign = 12;
+  string videourl = 13;
+  string favorates = 14;
+  int32 is_online = 15;
+  int32 is_employee = 16;
+  int32 is_approv = 18;
+  int32 uid = 19;
+}
+
+//更新用户响应
+message UserMateUpdateReply {
+  int32 code = 1;
+  string message = 2;
+}
+
+//创建订单请求
+message CreateOrderRequest {
+
+  string order_id = 1;
+  int32 uid = 2;
+  int32 service_category = 3;
+  string start_time = 4;
+  string end_time = 5;
+  float amount = 6;
+  int32 payment = 7;
+  string avatar = 8;
+  string link_url = 9;
+  int32 is_order_after = 10;
+  int32 user_mate_id = 11;
+  //detail
+  int32 gender = 12;
+  int32 level = 13;
+  int32 duration = 14;
+  string service_category_name = 15;
+  int32 service_category_id = 16;
+  string wechat = 17;
+  string note = 18;
+  float discount =19;
+
+}
+
+//创建订单响应
+message CreateOrderReply {
+  int32 code = 1;
+  string message = 2;
+  int32 user_mate_id = 3;
+  string user_mate_name = 4;
+}
+
+
+//更新订单请求
+message UpdateOrderRequest {
+  int32 status = 1;
+  string order_id = 2;
+}
+
+message UpdateOrderReply {
+  int32  code = 1;
+  string message = 2;
+  string update_time = 3;
+}
+
+//搜索用户请求
+message SearchUserMateRequest  {
+  string name = 1;
+}
+
+// 搜索用户响应
+message SearchUserMateResponse {
+  repeated UserMateInfo mateinfo = 1;
+}
+
+//订单请求
+message OrderDetailRequest  {
+  string order_id = 1;
+}
+
+//展示详情
+message OrderDetailResponse{
+  string order_id = 1;
+  int32 uid = 2;
+  int32 service_category = 3;
+  string start_time = 4;
+  string end_time = 5;
+  double amount = 6;
+  int32 payment = 7;
+  string avatar = 8;
+  string link_url = 9;
+  int32 is_order_after = 10;
+  int32 user_mate_id = 11;
+  //detail
+  int32 gender = 12;
+  int32 level = 13;
+  int32 duration = 14;
+  string service_category_name = 15;
+  int32 service_category_id = 16;
+  string wechat = 17;
+  string note = 18;
+}
+
+message  ListMateRequest {
+  int32 page = 1;
+  int32 pagesize = 2;
+}
+
+message  ListMateResponse{
+  repeated  UserMateInfo list = 1;
+}
+
+message  OrderListRequest {
+  int32 customer_id = 1;
+}
+
+//订单列表
+message  OrderListResponse {
+  repeated  OrderDetailResponse  data = 1;
+}

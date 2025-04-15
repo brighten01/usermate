@@ -1,0 +1,641 @@
+# Generated with protoc-gen-openapi
+# https://github.com/google/gnostic/tree/master/cmd/protoc-gen-openapi
+
+openapi: 3.0.3
+info:
+    title: UserMate API
+    description: The greeting service definition.
+    version: 0.0.1
+paths:
+    /api/v1/mate/delete/{id}:
+        get:
+            tags:
+                - UserMate
+            description: user mate delete
+            operationId: UserMate_DeleteUserMate
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/DeleteMateReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/mate/detail/{id}:
+        get:
+            tags:
+                - UserMate
+            description: user mates detail show
+            operationId: UserMate_UserMateDetail
+            parameters:
+                - name: id
+                  in: path
+                  required: true
+                  schema:
+                    type: integer
+                    format: int32
+                - name: username
+                  in: query
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UserMateShowReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/order/create:
+        post:
+            tags:
+                - UserMate
+            description: create order
+            operationId: UserMate_CreateOrder
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/CreateOrderRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/CreateOrderReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/order/detail:
+        post:
+            tags:
+                - UserMate
+            description: order detail
+            operationId: UserMate_OrderDetail
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/OrderDetailRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/OrderDetailResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/order/list:
+        post:
+            tags:
+                - UserMate
+            description: order list
+            operationId: UserMate_OrderList
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/OrderListRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/OrderListResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/order/update:
+        post:
+            tags:
+                - UserMate
+            description: update order
+            operationId: UserMate_UpdateOrder
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UpdateOrderRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UpdateOrderReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/usermate/add:
+        post:
+            tags:
+                - UserMate
+            description: user mate add
+            operationId: UserMate_AddUserMate
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UserMateRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UserMateReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/usermate/list:
+        get:
+            tags:
+                - UserMate
+            description: usermate list
+            operationId: UserMate_ListUserMate
+            parameters:
+                - name: page
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+                - name: pagesize
+                  in: query
+                  schema:
+                    type: integer
+                    format: int32
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/ListMateResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/usermate/search/{name}:
+        get:
+            tags:
+                - UserMate
+            operationId: UserMate_SearchUserMate
+            parameters:
+                - name: name
+                  in: path
+                  required: true
+                  schema:
+                    type: string
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/SearchUserMateResponse'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+    /api/v1/usermate/update:
+        post:
+            tags:
+                - UserMate
+            description: user mate update data
+            operationId: UserMate_UpdateUserMate
+            requestBody:
+                content:
+                    application/json:
+                        schema:
+                            $ref: '#/components/schemas/UserMateUpdateRequest'
+                required: true
+            responses:
+                "200":
+                    description: OK
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/UserMateUpdateReply'
+                default:
+                    description: Default error response
+                    content:
+                        application/json:
+                            schema:
+                                $ref: '#/components/schemas/Status'
+components:
+    schemas:
+        CreateOrderReply:
+            type: object
+            properties:
+                code:
+                    type: integer
+                    format: int32
+                message:
+                    type: string
+                userMateId:
+                    type: integer
+                    format: int32
+                userMateName:
+                    type: string
+            description: 创建订单响应
+        CreateOrderRequest:
+            type: object
+            properties:
+                orderId:
+                    type: string
+                uid:
+                    type: integer
+                    format: int32
+                serviceCategory:
+                    type: integer
+                    format: int32
+                startTime:
+                    type: string
+                endTime:
+                    type: string
+                amount:
+                    type: number
+                    format: float
+                payment:
+                    type: integer
+                    format: int32
+                avatar:
+                    type: string
+                linkUrl:
+                    type: string
+                isOrderAfter:
+                    type: integer
+                    format: int32
+                userMateId:
+                    type: integer
+                    format: int32
+                gender:
+                    type: integer
+                    description: detail
+                    format: int32
+                level:
+                    type: integer
+                    format: int32
+                duration:
+                    type: integer
+                    format: int32
+                serviceCategoryName:
+                    type: string
+                serviceCategoryId:
+                    type: integer
+                    format: int32
+                wechat:
+                    type: string
+                note:
+                    type: string
+                discount:
+                    type: number
+                    format: float
+            description: 创建订单请求
+        DeleteMateReply:
+            type: object
+            properties:
+                reply:
+                    $ref: '#/components/schemas/Reply'
+        GoogleProtobufAny:
+            type: object
+            properties:
+                '@type':
+                    type: string
+                    description: The type of the serialized message.
+            additionalProperties: true
+            description: Contains an arbitrary serialized message along with a @type that describes the type of the serialized message.
+        ListMateResponse:
+            type: object
+            properties:
+                list:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/UserMateInfo'
+        OrderDetailRequest:
+            type: object
+            properties:
+                orderId:
+                    type: string
+            description: 订单请求
+        OrderDetailResponse:
+            type: object
+            properties:
+                orderId:
+                    type: string
+                uid:
+                    type: integer
+                    format: int32
+                serviceCategory:
+                    type: integer
+                    format: int32
+                startTime:
+                    type: string
+                endTime:
+                    type: string
+                amount:
+                    type: number
+                    format: double
+                payment:
+                    type: integer
+                    format: int32
+                avatar:
+                    type: string
+                linkUrl:
+                    type: string
+                isOrderAfter:
+                    type: integer
+                    format: int32
+                userMateId:
+                    type: integer
+                    format: int32
+                gender:
+                    type: integer
+                    description: detail
+                    format: int32
+                level:
+                    type: integer
+                    format: int32
+                duration:
+                    type: integer
+                    format: int32
+                serviceCategoryName:
+                    type: string
+                serviceCategoryId:
+                    type: integer
+                    format: int32
+                wechat:
+                    type: string
+                note:
+                    type: string
+            description: 展示详情
+        OrderListRequest:
+            type: object
+            properties:
+                customerId:
+                    type: integer
+                    format: int32
+        OrderListResponse:
+            type: object
+            properties:
+                data:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/OrderDetailResponse'
+            description: 订单列表
+        Reply:
+            type: object
+            properties:
+                code:
+                    type: integer
+                    format: int32
+                message:
+                    type: string
+        SearchUserMateResponse:
+            type: object
+            properties:
+                mateinfo:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/UserMateInfo'
+            description: 搜索用户响应
+        Status:
+            type: object
+            properties:
+                code:
+                    type: integer
+                    description: The status code, which should be an enum value of [google.rpc.Code][google.rpc.Code].
+                    format: int32
+                message:
+                    type: string
+                    description: A developer-facing error message, which should be in English. Any user-facing error message should be localized and sent in the [google.rpc.Status.details][google.rpc.Status.details] field, or localized by the client.
+                details:
+                    type: array
+                    items:
+                        $ref: '#/components/schemas/GoogleProtobufAny'
+                    description: A list of messages that carry the error details.  There is a common set of message types for APIs to use.
+            description: 'The `Status` type defines a logical error model that is suitable for different programming environments, including REST APIs and RPC APIs. It is used by [gRPC](https://github.com/grpc). Each `Status` message contains three pieces of data: error code, error message, and error details. You can find out more about this error model and how to work with it in the [API Design Guide](https://cloud.google.com/apis/design/errors).'
+        UpdateOrderReply:
+            type: object
+            properties:
+                code:
+                    type: integer
+                    format: int32
+                message:
+                    type: string
+                updateTime:
+                    type: string
+        UpdateOrderRequest:
+            type: object
+            properties:
+                status:
+                    type: integer
+                    format: int32
+                orderId:
+                    type: string
+            description: 更新订单请求
+        UserMateInfo:
+            type: object
+            properties:
+                username:
+                    type: string
+                groupId:
+                    type: integer
+                    format: int32
+                realName:
+                    type: string
+                tags:
+                    type: string
+                birthday:
+                    type: string
+                hobby:
+                    type: string
+                avatar:
+                    type: string
+                nickname:
+                    type: string
+                images:
+                    type: string
+                age:
+                    type: integer
+                    format: int32
+                province:
+                    type: string
+                sign:
+                    type: string
+                videourl:
+                    type: string
+                favorates:
+                    type: string
+                isOnline:
+                    type: integer
+                    format: int32
+                isEmployee:
+                    type: integer
+                    format: int32
+                isApprov:
+                    type: integer
+                    format: int32
+                isDeleted:
+                    type: integer
+                    format: int32
+                createdAt:
+                    type: string
+                updateAt:
+                    type: string
+            description: 用户详情
+        UserMateReply:
+            type: object
+            properties:
+                reply:
+                    $ref: '#/components/schemas/Reply'
+        UserMateRequest:
+            type: object
+            properties:
+                username:
+                    type: string
+                groupId:
+                    type: integer
+                    format: int32
+                realName:
+                    type: string
+                tags:
+                    type: string
+                birthday:
+                    type: string
+                hobby:
+                    type: string
+                avatar:
+                    type: string
+                nickname:
+                    type: string
+                images:
+                    type: string
+                age:
+                    type: integer
+                    format: int32
+                province:
+                    type: string
+                sign:
+                    type: string
+                videourl:
+                    type: string
+                favorates:
+                    type: string
+                isOnline:
+                    type: integer
+                    format: int32
+                isEmployee:
+                    type: integer
+                    format: int32
+                isApprov:
+                    type: integer
+                    format: int32
+            description: 添加用户
+        UserMateShowReply:
+            type: object
+            properties:
+                mateinfo:
+                    $ref: '#/components/schemas/UserMateInfo'
+        UserMateUpdateReply:
+            type: object
+            properties:
+                code:
+                    type: integer
+                    format: int32
+                message:
+                    type: string
+            description: 更新用户响应
+        UserMateUpdateRequest:
+            type: object
+            properties:
+                username:
+                    type: string
+                groupId:
+                    type: integer
+                    format: int32
+                realName:
+                    type: string
+                tags:
+                    type: string
+                birthday:
+                    type: string
+                hobby:
+                    type: string
+                avatar:
+                    type: string
+                nickname:
+                    type: string
+                images:
+                    type: string
+                age:
+                    type: integer
+                    format: int32
+                province:
+                    type: string
+                sign:
+                    type: string
+                videourl:
+                    type: string
+                favorates:
+                    type: string
+                isOnline:
+                    type: integer
+                    format: int32
+                isEmployee:
+                    type: integer
+                    format: int32
+                isApprov:
+                    type: integer
+                    format: int32
+                uid:
+                    type: integer
+                    format: int32
+            description: 更新用户请求
+tags:
+    - name: UserMate
