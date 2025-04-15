@@ -396,7 +396,6 @@ components:
                     format: int32
                 gender:
                     type: integer
-                    description: detail
                     format: int32
                 level:
                     type: integer
@@ -412,6 +411,8 @@ components:
                 wechat:
                     type: string
                 note:
+                    type: string
+                nickname:
                     type: string
             description: 展示详情
         OrderListRequest:

@@ -2,13 +2,12 @@ package data
 
 import (
 	"context"
+	"github.com/go-kratos/kratos/v2/log"
 	"strconv"
 	"time"
 	"usermate/internal/biz"
 	"usermate/internal/data/model"
 	"usermate/pkg/utils"
-
-	"github.com/go-kratos/kratos/v2/log"
 )
 
 type UserMateRepo struct {
@@ -144,8 +143,8 @@ func (u UserMateRepo) CreateOrder(ctx context.Context, createOrderInfo *biz.Crea
 		return 0, "", err
 	}
 	return mainOrder.ID, order_id_str, nil
-
 }
+
 func (u UserMateRepo) UpdateOrder(ctx context.Context, orderUpdate *biz.UpdateOrderInfo) (id int64, order_id string, err error) {
 	u.log.WithContext(ctx).Infof("UpdateOrder: %v", orderUpdate)
 	result := u.data.db.Model(&model.Order{}).Where("id = ?", orderUpdate.OrderId).Updates(orderUpdate)
@@ -157,16 +156,17 @@ func (u UserMateRepo) UpdateOrder(ctx context.Context, orderUpdate *biz.UpdateOr
 	return orderId, orderUpdate.OrderId, nil
 }
 
-func (u UserMateRepo) OrderList(ctx context.Context, pageno int32, pagesize int32) ([]*model.Order, error) {
+func (u UserMateRepo) OrderList(ctx context.Context, pageno int32, pagesize int32) ([]*model.OrderList, error) {
 	u.log.WithContext(ctx).Infof("OrderList: %v", pageno, pagesize)
-	var orders []*model.Order
+	var orders []*model.OrderList
+
 	result := u.data.db.Limit(int(pagesize)).Offset(int((pageno - 1) * pagesize)).Find(&orders)
 	return orders, result.Error
 }
 
-func (u UserMateRepo) OrderDetail(ctx context.Context, order_id string) (*model.OrderDetail, error) {
+func (u UserMateRepo) OrderDetail(ctx context.Context, order_id string) (*model.OrderList, error) {
 	u.log.WithContext(ctx).Infof("OrderDetail: %v", order_id)
-	var orderDetail model.OrderDetail
+	var orderDetail model.OrderList
 	result := u.data.db.Where("order_id = ?", order_id).First(&orderDetail)
 	return &orderDetail, result.Error
 }

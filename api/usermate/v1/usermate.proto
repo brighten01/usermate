@@ -86,6 +86,20 @@ service UserMate {
     };
   };
 
+  rpc AddLevel(LevelRequest ) returns (LevelResponse){
+    option (google.api.http)= {
+      post:"/api/v1/level/create",
+      body:"*"
+    };
+  };
+
+
+  rpc AddServiceCategory(ServiceCategoryRequest)  returns(ServiceCategoryResponse  ){
+    option(google.api.http)= {
+      post:"/api/v1/category/create",
+      body:"*"
+    };
+  };
 
 }
 
@@ -194,7 +208,6 @@ message UserMateUpdateReply {
 
 //创建订单请求
 message CreateOrderRequest {
-
   string order_id = 1;
   int32 uid = 2;
   int32 service_category = 3;
@@ -267,7 +280,6 @@ message OrderDetailResponse{
   string link_url = 9;
   int32 is_order_after = 10;
   int32 user_mate_id = 11;
-  //detail
   int32 gender = 12;
   int32 level = 13;
   int32 duration = 14;
@@ -275,6 +287,7 @@ message OrderDetailResponse{
   int32 service_category_id = 16;
   string wechat = 17;
   string note = 18;
+  string nickname=19;
 }
 
 message  ListMateRequest {
@@ -293,4 +306,30 @@ message  OrderListRequest {
 //订单列表
 message  OrderListResponse {
   repeated  OrderDetailResponse  data = 1;
+}
+
+message LevelRequest {
+  int32 level =1;
+  string level_name=2;
+  int32 status=3;
+  int32  radios=4;
+}
+
+
+message  LevelResponse {
+  int32 Code =1;
+  string message =2;
+}
+
+
+//其余字段算出
+message ServiceCategoryRequest {
+  string category_name =1 ;
+  int32 parent_id =2;
+  int32 status=3;
+}
+
+message ServiceCategoryResponse {
+  int32 Code =1;
+  string message =2;
 }

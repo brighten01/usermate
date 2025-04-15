@@ -2,10 +2,9 @@ package biz
 
 import (
 	"context"
+	"github.com/go-kratos/kratos/v2/log"
 	"time"
 	"usermate/internal/data/model"
-
-	"github.com/go-kratos/kratos/v2/log"
 )
 
 type AddMateRequest struct {
@@ -83,6 +82,9 @@ type UpdateOrderInfo struct {
 	Note    string `json:"note"`
 }
 
+type LevelRequest struct {
+}
+
 type UserMateRepo interface {
 	AddUserMate(ctx context.Context, addmate AddMateRequest) (AddMateResponse, error)
 	UserMateList(ctx context.Context, pageno int32, pagesize int32) ([]*model.UserMate, error)
@@ -92,8 +94,9 @@ type UserMateRepo interface {
 	SearchUserMate(ctx context.Context, username string) ([]*model.UserMate, error)
 	CreateOrder(ctx context.Context, orderCreate *CreateOrderInfo) (id int64, order_id string, err error)
 	UpdateOrder(ctx context.Context, orderUpdate *UpdateOrderInfo) (id int64, order_id string, err error)
-	OrderList(ctx context.Context, pageno int32, pagesize int32) ([]*model.Order, error)
-	OrderDetail(ctx context.Context, order_id string) (*model.OrderDetail, error)
+	OrderList(ctx context.Context, pageno int32, pagesize int32) ([]*model.OrderList, error)
+	OrderDetail(ctx context.Context, order_id string) (*model.OrderList, error)
+	AddLevel(ctx context.Context)
 }
 
 type UserMateUsecase struct {
@@ -140,4 +143,19 @@ func (uc *UserMateUsecase) SearchMates(ctx context.Context, username string) ([]
 func (uc *UserMateUsecase) CreateOrderInfo(ctx context.Context, info *CreateOrderInfo) (id int64, order_id string, err error) {
 	uc.log.WithContext(ctx).Infof("Create Order Info %v", info)
 	return uc.repo.CreateOrder(ctx, info)
+}
+
+func (uc *UserMateUsecase) UpdateOrderInfo(ctx context.Context, info *UpdateOrderInfo) (id int64, order_id string, err error) {
+	uc.log.WithContext(ctx).Infof("Update Order Info %v", info)
+	return uc.repo.UpdateOrder(ctx, info)
+}
+
+func (uc *UserMateUsecase) OrderList(ctx context.Context, pageno int32, pagesize int32) ([]*model.OrderList, error) {
+	uc.log.WithContext(ctx).Infof("OrderList: %v", pageno, pagesize)
+	return uc.repo.OrderList(ctx, pageno, pagesize)
+}
+
+func (uc *UserMateUsecase) OrderDetail(ctx context.Context, order_id string) (*model.OrderList, error) {
+	uc.log.WithContext(ctx).Infof("OrderDetail: %v", order_id)
+	return uc.repo.OrderDetail(ctx, order_id)
 }

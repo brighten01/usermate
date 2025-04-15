@@ -14,7 +14,6 @@ import (
 
 const (
 	epoch          = 1672531200000 // 2023-01-01 00:00:00 UTC
-	timestampBits  = 41
 	datacenterBits = 5
 	workerBits     = 5
 	sequenceBits   = 12

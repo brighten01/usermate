@@ -2,12 +2,11 @@ package service
 
 import (
 	"context"
+	"github.com/go-kratos/kratos/v2/log"
 	"strconv"
 	"time"
 	pb "usermate/api/usermate/v1"
 	"usermate/internal/biz"
-
-	"github.com/go-kratos/kratos/v2/log"
 )
 
 type UserMateService struct {
@@ -226,13 +225,74 @@ func (s *UserMateService) CreateOrder(ctx context.Context, req *pb.CreateOrderRe
 }
 
 func (s *UserMateService) UpdateOrder(ctx context.Context, req *pb.UpdateOrderRequest) (*pb.UpdateOrderReply, error) {
-	return &pb.UpdateOrderReply{}, nil
+	UpdateOrderInfo := &biz.UpdateOrderInfo{
+		OrderId: req.OrderId,
+		Status:  int8(req.Status),
+	}
+	_, _, err := s.uc.UpdateOrderInfo(ctx, UpdateOrderInfo)
+	if err != nil {
+		return &pb.UpdateOrderReply{}, nil
+	}
+	return &pb.UpdateOrderReply{
+		Code:    200,
+		Message: "success",
+	}, nil
 }
 
 func (s *UserMateService) OrderList(ctx context.Context, req *pb.OrderListRequest) (*pb.OrderListResponse, error) {
-	return &pb.OrderListResponse{}, nil
+	response, err := s.uc.OrderList(ctx, req.CustomerId, 10)
+	if err != nil {
+		return &pb.OrderListResponse{}, err
+	}
+	orderList := make([]*pb.OrderDetailResponse, 0)
+	for _, order := range response {
+		orderList = append(orderList, &pb.OrderDetailResponse{
+			OrderId:             order.OrderID,
+			Uid:                 int32(order.UID),
+			UserMateId:          int32(order.UserMateID),
+			ServiceCategory:     func() int32 { v, _ := strconv.Atoi(order.ServiceCategory); return int32(v) }(),
+			StartTime:           order.StartTime.Format("2006-01-02 15:04:05"),
+			EndTime:             order.EndTime.Format("2006-01-02 15:04:05"),
+			Amount:              order.Amount,
+			Payment:             int32(order.Payment),
+			Avatar:              order.Avatar,
+			LinkUrl:             order.LinkURL,
+			IsOrderAfter:        int32(order.IsOrderAfter),
+			Gender:              int32(order.Gender),
+			Level:               int32(order.Level),
+			Duration:            int32(order.Duration),
+			ServiceCategoryName: order.ServiceCategory,
+			ServiceCategoryId:   int32(order.ServiceCategoryID),
+			Wechat:              order.Wechat,
+			Note:                order.Note,
+		})
+	}
+	return &pb.OrderListResponse{
+		Data: orderList,
+	}, nil
 }
 
 func (s *UserMateService) OrderDetail(ctx context.Context, req *pb.OrderDetailRequest) (*pb.OrderDetailResponse, error) {
-	return &pb.OrderDetailResponse{}, nil
+	response, err := s.uc.OrderDetail(ctx, req.OrderId)
+	if err != nil {
+		return &pb.OrderDetailResponse{}, err
+	}
+	return &pb.OrderDetailResponse{
+		OrderId:             response.OrderID,
+		ServiceCategory:     int32(response.ServiceCategoryID),
+		StartTime:           response.CreatedAt.Format("2006-01-02 15:04:05"),
+		EndTime:             response.UpdatedAt.Format("2006-01-02 15:04:05"),
+		Amount:              float64(response.ServiceCategoryID),
+		ServiceCategoryName: response.ServiceCategoryName,
+		Gender:              int32(response.Gender),
+		Level:               int32(response.Level),
+		Duration:            int32(response.Duration),
+		Note:                response.Note,
+		Payment:             int32(response.Payment),
+		Uid:                 int32(response.UID),
+		UserMateId:          int32(response.UserMateID),
+		Nickname:            response.Nickname,
+		Avatar:              response.Avatar,
+		LinkUrl:             response.LinkURL,
+	}, nil
 }
