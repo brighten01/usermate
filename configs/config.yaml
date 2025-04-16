@@ -16,8 +16,17 @@ data:
     write_timeout: 0.2s
     dial_timeout: 3s
 log:
-  filename: "./log/usermate-service.log"
+  filename: ./log/usermate-service.log
   max_size: 1
   max_backup: 5
   max_age: 10
   compress: true
+
+kafka:
+  host: localhost:9092
+  topic: "order_group"
+  group: "order_group"
+
+elasticsearch:
+  host: http://127.0.0.1:9200
+  order_index: "orders"

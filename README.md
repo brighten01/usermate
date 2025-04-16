@@ -41,6 +41,8 @@ wire
 ```
 
 ## Docker
+
+
 ```bash
 # build
 docker build -t <your-docker-image-name> .
@@ -49,4 +51,117 @@ docker build -t <your-docker-image-name> .
 docker run --rm -p 8000:8000 -p 9000:9000 -v </path/to/your/configs>:/data/conf <your-docker-image-name>
 ```
 
->>>>>>> e9982fb (usermate 项目初始化)
+### kafka 创建topic 
+```
+kafka-topics --create --topic order-topic --partitions 1 --replication-factor 1 --bootstrap-server localhost:9092
+```
+###topic 列表
+
+```
+ kafka-topics --list  --bootrap-server localhost:9092
+
+```
+
+### order mapping 
+```
+PUT orders/_mappings
+{
+    "properties": {
+      "id":{
+        "type":"integer",
+        "index": true      
+      },
+      
+      "order_id":{
+        "type":"text",
+        "index":true
+      },
+      
+      "uid":{
+        "type":"integer",
+        "index":true 
+      },
+      
+      "user_mate_id":{
+        "type":"integer",
+        "index":true
+      },
+      
+      "service_category_id":{
+        "type":"integer",
+        "index":true
+      },
+      
+      "start_time":{
+        "type":"date",
+        "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+      },
+      
+      "end_time":{
+        "type":"date",
+        "format": "yyyy-MM-dd HH:mm:ss||yyyy-MM-dd||epoch_millis"
+      },
+      
+      "status":{
+        "type":"integer"
+      },
+      "amount":{
+        "type":"float",
+        "index": false
+      },
+      
+      "discount":{
+        "type":"integer",
+        "index": false
+      },
+      
+      "avatar":{
+        "type":"text",
+        "index":false
+      },
+      
+      "link_url":{
+        "type":"text",
+        "index" :false
+      },
+      
+      "is_order_after":{
+        "type":"integer"
+      },
+      
+      "gender":{
+        "type":"integer"
+      },
+      
+      "level":{
+        "type":"integer",
+        "index":false
+      },
+      
+      "duration":{
+        "type":"integer",
+        "index":false
+      },
+      
+      "service_category_name":{
+        "type":"text",
+        "index":false
+      },
+      
+      "wechat":{
+        "type":"text",
+        "index":false
+      },
+      
+      "note":{
+        "type":"text",
+        "index":false
+      },
+      "payment":{
+        "type":"integer",
+        "index":false
+      }
+      
+    }
+}
+```

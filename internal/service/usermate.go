@@ -211,9 +211,16 @@ func (s *UserMateService) CreateOrder(ctx context.Context, req *pb.CreateOrderRe
 		Note:            req.Note,
 		Payment:         int64(req.Payment),
 	}
-	_, _, err := s.uc.CreateOrderInfo(ctx, CreateOrderInfo)
+	_, order_id, err := s.uc.CreateOrderInfo(ctx, CreateOrderInfo)
 	if err != nil {
 		return &pb.CreateOrderReply{}, nil
+	}
+
+	orderInfo, err := s.uc.GetOrderInfoById(ctx, order_id)
+	// es
+	err = s.uc.CreateOrderToKafka(ctx, orderInfo)
+	if err != nil {
+		s.log.WithContext(ctx).Errorf("write to kafka faild %v", err)
 	}
 	return &pb.CreateOrderReply{
 		Code:         200,
@@ -243,6 +250,7 @@ func (s *UserMateService) OrderList(ctx context.Context, req *pb.OrderListReques
 	if err != nil {
 		return &pb.OrderListResponse{}, err
 	}
+
 	orderList := make([]*pb.OrderDetailResponse, 0)
 	for _, order := range response {
 		orderList = append(orderList, &pb.OrderDetailResponse{

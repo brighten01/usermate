@@ -2,7 +2,9 @@ package data
 
 import (
 	"context"
+	"encoding/json"
 	"github.com/go-kratos/kratos/v2/log"
+	"github.com/segmentio/kafka-go"
 	"strconv"
 	"time"
 	"usermate/internal/biz"
@@ -202,6 +204,30 @@ func (u UserMateRepo) AddServiceCategory(ctx context.Context, category *biz.Serv
 	result := u.data.db.Create(categoryInfo)
 	if result.Error != nil {
 		return result.Error
+	}
+	return nil
+}
+
+func (u UserMateRepo) GetOrderInfoById(ctx context.Context, order_id string) (*model.OrderList, error) {
+	var orderInfo *model.OrderList
+	result := u.data.db.Where("order_id=?", order_id).First(orderInfo)
+	if result.Error != nil {
+		return &model.OrderList{}, nil
+	}
+	return orderInfo, nil
+}
+
+func (u UserMateRepo) CreateToKafka(ctx context.Context, orderInfo *model.OrderList) error {
+	var orderData []byte
+	orderData, err := json.Marshal(orderInfo)
+	if err != nil {
+		u.log.WithContext(ctx).Errorf("json marshal faild data to kafka failed %v ", err)
+	}
+	//写入数据
+	err = u.data.writer.WriteMessages(context.Background(), kafka.Message{Value: orderData})
+	if err != nil {
+		u.log.WithContext(ctx).Errorf("write data to kafka failed %v ", err)
+		return err
 	}
 	return nil
 }

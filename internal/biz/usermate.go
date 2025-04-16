@@ -108,6 +108,8 @@ type UserMateRepo interface {
 	OrderDetail(ctx context.Context, order_id string) (*model.OrderList, error)
 	AddLevel(ctx context.Context, levelinfo *LevelRequest) error
 	AddServiceCategory(ctx context.Context, category *ServiceCategoryRequest) error
+	CreateToKafka(ctx context.Context, orderInfo *model.OrderList) error
+	GetOrderInfoById(ctx context.Context, order_id string) (*model.OrderList, error)
 }
 
 type UserMateUsecase struct {
@@ -179,4 +181,13 @@ func (uc *UserMateUsecase) AddLevel(ctx context.Context, request *LevelRequest) 
 func (uc *UserMateUsecase) AddServiceCategory(ctx context.Context, category *ServiceCategoryRequest) error {
 	uc.log.WithContext(ctx).Infof("level: %v", category)
 	return uc.repo.AddServiceCategory(ctx, category)
+}
+
+func (uc *UserMateUsecase) CreateOrderToKafka(ctx context.Context, orderInfo *model.OrderList) error {
+	uc.log.WithContext(ctx).Infof("order to es %v ", orderInfo)
+	return uc.repo.CreateToKafka(ctx, orderInfo)
+}
+
+func (uc *UserMateUsecase) GetOrderInfoById(ctx context.Context, order_id string) (*model.OrderList, error) {
+	return uc.repo.GetOrderInfoById(ctx, order_id)
 }
