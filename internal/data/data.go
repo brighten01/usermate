@@ -2,16 +2,14 @@ package data
 
 import (
 	"context"
-	"usermate/internal/conf"
-	"usermate/pkg/utils"
-
 	"github.com/go-kratos/kratos/v2/log"
 	"github.com/google/wire"
-	"github.com/olivere/elastic/v7"
 	"github.com/redis/go-redis/v9"
 	"github.com/segmentio/kafka-go"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
+	"usermate/internal/conf"
+	"usermate/pkg/utils"
 )
 
 // ProviderSet is data providers.
@@ -23,12 +21,14 @@ type Data struct {
 	elasticConf  *conf.ElasticSearch
 	db           *gorm.DB
 	kafka        *kafka.Writer
-	searchClient *elastic.Client
+	searchClient *utils.ESClient
 	writer       *kafka.Writer
 }
 
 // NewData .
 func NewData(c *conf.Data, kafkaconf *conf.Kafka, elasticConf *conf.ElasticSearch, logger log.Logger) (*Data, func(), error) {
+	var ctx context.Context
+
 	cleanup := func() {
 		log.NewHelper(logger).Info("closing the data resources")
 	}
@@ -69,7 +69,7 @@ func NewData(c *conf.Data, kafkaconf *conf.Kafka, elasticConf *conf.ElasticSearc
 
 	log.NewHelper(logger).Infof("init kafka client success")
 	// 初始化elaticsearchs
-	searchClient, err := elastic.NewClient(elastic.SetURL(elasticConf.Host), elastic.SetSniff(false))
+	searchClient, err := utils.NewESClient(elasticConf, logger)
 	if err != nil {
 		if err != nil {
 			log.NewHelper(logger).Errorf("elasticsearch 初始化失败:", err)
@@ -84,6 +84,7 @@ func NewData(c *conf.Data, kafkaconf *conf.Kafka, elasticConf *conf.ElasticSearc
 		ReadTimeout:  c.Redis.ReadTimeout.AsDuration(),
 	})
 
+	//收发消息
 	go func() {
 		for {
 			msg, err := reader.ReadMessage(context.Background())
@@ -93,8 +94,7 @@ func NewData(c *conf.Data, kafkaconf *conf.Kafka, elasticConf *conf.ElasticSearc
 			}
 			log.NewHelper(logger).Infof("收到消息: Topic=%s, Partition=%d, Offset=%d, Key=%s, Value=%s\n",
 				msg.Topic, msg.Partition, msg.Offset, string(msg.Key), string(msg.Value))
-
-			err = utils.UpsertOrderData(searchClient, msg.Value, logger, elasticConf)
+			err = searchClient.UpsertOrderData(ctx, msg.Value, elasticConf)
 			if err != nil {
 				log.NewHelper(logger).Errorf("订单数据写入ES失败: %v", err)
 			}

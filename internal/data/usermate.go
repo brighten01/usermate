@@ -27,7 +27,7 @@ func NewUserMateRepo(data *Data, logger log.Logger) biz.UserMateRepo {
 func (u UserMateRepo) AddUserMate(ctx context.Context, addmate biz.AddMateRequest) (biz.AddMateResponse, error) {
 	u.log.WithContext(ctx).Infof("AddUserMate: %v", addmate)
 	//todo 添加用户请求
-	result := u.data.db.Create(&model.UserMate{
+	result := u.data.db.WithContext(ctx).Create(&model.UserMate{
 		UserName:  addmate.UserName,
 		GroupId:   addmate.GroupId,
 		RealName:  addmate.RealName,
@@ -56,7 +56,7 @@ func (u UserMateRepo) AddUserMate(ctx context.Context, addmate biz.AddMateReques
 func (u UserMateRepo) UserMateList(ctx context.Context, pageno int32, pagesize int32) ([]*model.UserMate, error) {
 	u.log.WithContext(ctx).Infof("UserMateList")
 	var userMates []*model.UserMate
-	result := u.data.db.Limit(int(pagesize)).Offset(int((pageno - 1) * pagesize)).Find(&userMates)
+	result := u.data.db.WithContext(ctx).Limit(int(pagesize)).Offset(int((pageno - 1) * pagesize)).Find(&userMates)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -77,21 +77,21 @@ func (u UserMateRepo) UserMateDetail(ctx context.Context, id int32) (*model.User
 // 删除用户
 func (u UserMateRepo) DeleteUserMate(ctx context.Context, id int32) error {
 	u.log.WithContext(ctx).Infof("DeleteUserMate: %v", id)
-	result := u.data.db.Where("id = ?", id).Delete(&model.UserMate{})
+	result := u.data.db.WithContext(ctx).Where("id = ?", id).Delete(&model.UserMate{})
 	return result.Error
 }
 
 // 更新用户
 func (u UserMateRepo) UpdateUserMate(ctx context.Context, id int32, updateMate *biz.UpdateMateRequest) error {
 	u.log.WithContext(ctx).Infof("UpdateUserMate: %v", id)
-	result := u.data.db.Model(&model.UserMate{}).Where("id = ?", id).Updates(updateMate)
+	result := u.data.db.WithContext(ctx).Model(&model.UserMate{}).Where("id = ?", id).Updates(updateMate)
 	return result.Error
 }
 
 func (u UserMateRepo) SearchUserMate(ctx context.Context, username string) ([]*model.UserMate, error) {
 	u.log.WithContext(ctx).Infof("search username %v", username)
 	var userMate []*model.UserMate
-	result := u.data.db.Where("nickname=?", username).Find(userMate)
+	result := u.data.db.WithContext(ctx).Where("nickname=?", username).Find(userMate)
 	if result.Error != nil {
 		return []*model.UserMate{}, result.Error
 	}
@@ -119,7 +119,7 @@ func (u UserMateRepo) CreateOrder(ctx context.Context, createOrderInfo *biz.Crea
 		UpdatedAt:       time.Now(),
 		CreatedAt:       time.Now(),
 	}
-	result := u.data.db.Create(mainOrder)
+	result := u.data.db.WithContext(ctx).Create(mainOrder)
 	if result.Error != nil {
 		return 0, "", err
 	}
@@ -140,7 +140,7 @@ func (u UserMateRepo) CreateOrder(ctx context.Context, createOrderInfo *biz.Crea
 		CreatedAt:           time.Now(),
 		UpdatedAt:           time.Now(),
 	}
-	result = u.data.db.Create(orderDetail)
+	result = u.data.db.WithContext(ctx).Create(orderDetail)
 	if result.Error != nil {
 		return 0, "", err
 	}
@@ -149,7 +149,7 @@ func (u UserMateRepo) CreateOrder(ctx context.Context, createOrderInfo *biz.Crea
 
 func (u UserMateRepo) UpdateOrder(ctx context.Context, orderUpdate *biz.UpdateOrderInfo) (id int64, order_id string, err error) {
 	u.log.WithContext(ctx).Infof("UpdateOrder: %v", orderUpdate)
-	result := u.data.db.Model(&model.Order{}).Where("id = ?", orderUpdate.OrderId).Updates(orderUpdate)
+	result := u.data.db.WithContext(ctx).Model(&model.Order{}).Where("id = ?", orderUpdate.OrderId).Updates(orderUpdate)
 	if result.Error != nil {
 		return 0, "", result.Error
 	}
@@ -162,7 +162,7 @@ func (u UserMateRepo) OrderList(ctx context.Context, pageno int32, pagesize int3
 	u.log.WithContext(ctx).Infof("OrderList: %v", pageno, pagesize)
 	var orders []*model.OrderList
 
-	result := u.data.db.Limit(int(pagesize)).Offset(int((pageno - 1) * pagesize)).Find(&orders)
+	result := u.data.db.WithContext(ctx).Limit(int(pagesize)).Offset(int((pageno - 1) * pagesize)).Find(&orders)
 	return orders, result.Error
 }
 
@@ -184,7 +184,7 @@ func (u UserMateRepo) AddLevel(ctx context.Context, level *biz.LevelRequest) err
 		CreatedAt: time.Now(),
 		UpdatedAt: time.Now(),
 	}
-	result := u.data.db.Create(levelinfo)
+	result := u.data.db.WithContext(ctx).Create(levelinfo)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -201,7 +201,7 @@ func (u UserMateRepo) AddServiceCategory(ctx context.Context, category *biz.Serv
 		CreatedAt:    time.Now(),
 		UpdatedAt:    time.Now(),
 	}
-	result := u.data.db.Create(categoryInfo)
+	result := u.data.db.WithContext(ctx).Create(categoryInfo)
 	if result.Error != nil {
 		return result.Error
 	}
@@ -210,7 +210,7 @@ func (u UserMateRepo) AddServiceCategory(ctx context.Context, category *biz.Serv
 
 func (u UserMateRepo) GetOrderInfoById(ctx context.Context, order_id string) (*model.OrderList, error) {
 	var orderInfo *model.OrderList
-	result := u.data.db.Where("order_id=?", order_id).First(orderInfo)
+	result := u.data.db.WithContext(ctx).Where("order_id=?", order_id).First(orderInfo)
 	if result.Error != nil {
 		return &model.OrderList{}, nil
 	}

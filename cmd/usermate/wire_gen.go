@@ -23,19 +23,19 @@ import (
 // Injectors from wire.go:
 
 // wireApp init kratos application.
-func wireApp(confServer *conf.Server, confData *conf.Data, kafkaconf *conf.Kafka,elasticConf  *conf.ElasticSearch ,logger log.Logger) (*kratos.App, func(), error) {
-	dataData, cleanup, err := data.NewData(confData,kafkaconf, elasticConf,logger)
+func wireApp(confServer *conf.Server, confData *conf.Data, kafka *conf.Kafka, elastic *conf.ElasticSearch, logger log.Logger) (*kratos.App, func(), error) {
+	dataData, cleanup, err := data.NewData(confData, kafka, elastic, logger)
 	if err != nil {
 		return nil, nil, err
 	}
 	greeterRepo := data.NewGreeterRepo(dataData, logger)
 	greeterUsecase := biz.NewGreeterUsecase(greeterRepo, logger)
 	greeterService := service.NewGreeterService(greeterUsecase)
-	userMateRepo :=data.NewUserMateRepo(dataData,logger)
-	userMateUsecase := biz.NewUserMateUsecase(userMateRepo,logger)
-	userMateService:= service.NewUserMateService(userMateUsecase,logger)
-	grpcServer := server.NewGRPCServer(confServer, greeterService,userMateService ,logger)
-	httpServer := server.NewHTTPServer(confServer, greeterService,userMateService, logger)
+	userMateRepo := data.NewUserMateRepo(dataData, logger)
+	userMateUsecase := biz.NewUserMateUsecase(userMateRepo, logger)
+	userMateService := service.NewUserMateService(userMateUsecase, logger)
+	grpcServer := server.NewGRPCServer(confServer, greeterService, userMateService, logger)
+	httpServer := server.NewHTTPServer(confServer, greeterService, userMateService, logger)
 	app := newApp(logger, grpcServer, httpServer)
 	return app, func() {
 		cleanup()
