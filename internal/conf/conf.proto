@@ -51,8 +51,14 @@ message Kafka {
 }
 
 message ElasticSearch {
-  string host = 1;
-    string order_index=2;
-    string username=3;
-    string password=4;
+    string host = 1;
+    SearchElement orders_es=2;
+    SearchElement usermates_es=3;
+}
+
+message  SearchElement {
+  string host=1;
+  string index=2;
+  string username=3;
+  string password=4;
 }

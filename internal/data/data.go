@@ -68,12 +68,10 @@ func NewData(c *conf.Data, kafkaconf *conf.Kafka, elasticConf *conf.ElasticSearc
 	}()
 
 	log.NewHelper(logger).Infof("init kafka client success")
-	// 初始化elaticsearchs
-	searchClient, err := utils.NewESClient(elasticConf, logger)
+	// 初始化elaticsearch
+	searchClient, err := utils.NewOrderESClient(elasticConf, logger)
 	if err != nil {
-		if err != nil {
-			log.NewHelper(logger).Errorf("elasticsearch 初始化失败:", err)
-		}
+		log.NewHelper(logger).Errorf("elasticsearch 初始化失败:", err)
 	}
 
 	rdb := redis.NewClient(&redis.Options{

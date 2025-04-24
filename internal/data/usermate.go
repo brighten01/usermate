@@ -15,12 +15,14 @@ import (
 type UserMateRepo struct {
 	data *Data
 	log  log.Helper
+	name string
 }
 
 func NewUserMateRepo(data *Data, logger log.Logger) biz.UserMateRepo {
 	return &UserMateRepo{
 		data: data,
 		log:  *log.NewHelper(logger),
+		name: "orderdao",
 	}
 }
 

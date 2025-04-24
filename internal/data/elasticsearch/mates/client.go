@@ -22,14 +22,13 @@ type ESConfig struct {
 
 func NewESClient(logger log.Logger, esConf *conf.ElasticSearch) (*Client, error) {
 	cfg := &ESConfig{
-		Address:  esConf.Host,
-		Username: esConf.Username,
-		Password: esConf.Password,
+		Address:  esConf.UsermatesEs.Host,
+		Username: esConf.UsermatesEs.Username,
+		Password: esConf.UsermatesEs.Password,
 	}
 	if cfg == nil || cfg.Address == "" {
 		return nil, common.ErrInvalidConfig
 	}
-
 	options := []elastic.ClientOptionFunc{
 		elastic.SetURL(cfg.Address),
 		elastic.SetSniff(false),
@@ -47,15 +46,14 @@ func NewESClient(logger log.Logger, esConf *conf.ElasticSearch) (*Client, error)
 	return &Client{
 		client: client,
 		log:    log.NewHelper(logger),
+		index:  esConf.OrdersEs.Index,
 	}, nil
 }
 
 func (c *Client) SearchMates(ctx context.Context, req SearchMateDTO) (*elastic.SearchResult, error) {
-
 	return &elastic.SearchResult{}, nil
 }
 
 func (c *Client) AddUserMates(ctx context.Context, dto AddMateDTO) error {
-
 	return nil
 }

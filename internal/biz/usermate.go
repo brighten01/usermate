@@ -2,11 +2,12 @@ package biz
 
 import (
 	"context"
-	"github.com/go-kratos/kratos/v2/log"
 	"time"
 	"usermate/internal/data/elasticsearch"
 	"usermate/internal/data/elasticsearch/mates"
 	"usermate/internal/data/model"
+
+	"github.com/go-kratos/kratos/v2/log"
 )
 
 type AddMateRequest struct {

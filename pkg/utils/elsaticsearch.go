@@ -84,14 +84,15 @@ type ESClient struct {
 }
 
 // NewESClient 创建新的ES客户端
-func NewESClient(esconf *conf.ElasticSearch, logger log.Logger) (*ESClient, error) {
+func NewOrderESClient(esconf *conf.ElasticSearch, logger log.Logger) (*ESClient, error) {
 	cfg := &ESConfig{
-		Address:  esconf.Host,
-		Username: esconf.Username,
-		Password: esconf.Password,
+		Address:  esconf.OrdersEs.Host,
+		Username: esconf.OrdersEs.Username,
+		Password: esconf.OrdersEs.Password,
 	}
+
 	if cfg == nil || cfg.Address == "" {
-		return nil, common.ErrInvalidConfig
+		return nil, errors.New("es 初始化失败")
 	}
 
 	options := []elastic.ClientOptionFunc{
@@ -157,81 +158,6 @@ type BatchWriteResult struct {
 }
 
 // SearchOrderDataWithOptions 使用选项搜索订单数据
-func (es *ESClient) SearchOrderDataWithOptions(ctx context.Context, opts SearchOptions) ([]*OrderList, error) {
-	cacheKey := fmt.Sprintf("search:%v", opts)
-	if cached, found := es.cache.Get(cacheKey); found {
-		if orders, ok := cached.([]*OrderList); ok {
-			es.log.WithContext(ctx).Info("从缓存获取数据")
-			return orders, nil
-		}
-	}
-
-	query := elastic.NewBoolQuery()
-
-	if opts.Query != "" {
-		query.Must(elastic.NewQueryStringQuery(opts.Query))
-	}
-
-	if !opts.StartTime.IsZero() {
-		query.Filter(elastic.NewRangeQuery("start_time").Gte(opts.StartTime))
-	}
-
-	if !opts.EndTime.IsZero() {
-		query.Filter(elastic.NewRangeQuery("end_time").Lte(opts.EndTime))
-	}
-
-	if opts.Status != 0 {
-		query.Filter(elastic.NewTermQuery("status", opts.Status))
-	}
-
-	if opts.MinAmount > 0 {
-		query.Filter(elastic.NewRangeQuery("amount").Gte(opts.MinAmount))
-	}
-
-	if opts.MaxAmount > 0 {
-		query.Filter(elastic.NewRangeQuery("amount").Lte(opts.MaxAmount))
-	}
-
-	if opts.UserMateID != 0 {
-		query.Filter(elastic.NewTermQuery("user_mate_id", opts.UserMateID))
-	}
-
-	search := es.client.Search().
-		Index(common.OrderIndex).
-		Query(query)
-
-	if opts.OrderBy != "" {
-		search.Sort(opts.OrderBy, opts.OrderDesc)
-	}
-
-	if opts.Page < common.DefaultPage {
-		opts.Page = common.DefaultPage
-	}
-	if opts.Size < common.DefaultPageSize {
-		opts.Size = common.DefaultPageSize
-	}
-
-	searchResult, err := search.
-		From((opts.Page - 1) * opts.Size).
-		Size(opts.Size).
-		Do(ctx)
-	if err != nil {
-		return nil, fmt.Errorf("%w: %v", common.ErrDataSearch, err)
-	}
-
-	var orders []*OrderList
-	for _, hit := range searchResult.Hits.Hits {
-		var order OrderList
-		if err := json.Unmarshal(hit.Source, &order); err != nil {
-			es.log.WithContext(ctx).Errorf("解析订单数据失败: %v", err)
-			continue
-		}
-		orders = append(orders, &order)
-	}
-
-	es.cache.Set(cacheKey, orders, common.DefaultCacheExpiration)
-	return orders, nil
-}
 
 // BatchWriteOrderData 批量写入订单数据
 func (es *ESClient) BatchWriteOrderData(ctx context.Context, orders []*OrderList) (*BatchWriteResult, error) {
@@ -292,30 +218,6 @@ type OrderRequest struct {
 	OrderId    string
 }
 
-// ESService Elasticsearch服务接口
-type ESService interface {
-	WriteOrderData(ctx context.Context, orderInfo []byte) error
-	SearchOrderData(ctx context.Context, query string, page, size int) ([]*OrderList, error)
-	Close()
-}
-
-// 确保ESClient实现了ESService接口
-var _ ESService = (*ESClient)(nil)
-
-// SearchOrderData 搜索订单数据
-func (es *ESClient) SearchOrderData(ctx context.Context, query string, page, size int) ([]*OrderList, error) {
-	opts := SearchOptions{
-		Query: query,
-		Page:  page,
-		Size:  size,
-	}
-	orders, err := es.SearchOrderDataWithOptions(ctx, opts)
-	if err != nil {
-		return nil, err
-	}
-	return orders, nil
-}
-
 // UpsertOrderData 更新或插入订单数据
 func (es *ESClient) UpsertOrderData(ctx context.Context, data []byte, esconf *conf.ElasticSearch) error {
 	var order OrderList
@@ -325,7 +227,7 @@ func (es *ESClient) UpsertOrderData(ctx context.Context, data []byte, esconf *co
 	}
 
 	_, err := es.client.Index().
-		Index(esconf.OrderIndex).
+		Index(esconf.OrdersEs.Index).
 		Id(order.OrderID).
 		BodyJson(order).
 		Do(context.Background())

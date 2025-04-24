@@ -17,7 +17,7 @@ import (
 	"usermate/internal/service"
 )
 
-// wireApp init kratos application.
+// wireApp init kratos application.go
 func wireApp(confServer *conf.Server, confData *conf.Data, kafka *conf.Kafka, elastic *conf.ElasticSearch, logger log.Logger) (*kratos.App, func(), error) {
 	panic(wire.Build(server.ProviderSet, data.ProviderSet, biz.ProviderSet, service.ProviderSet, elasticsearch.ProviderSet, newApp))
 }
