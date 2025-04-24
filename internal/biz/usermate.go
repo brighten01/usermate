@@ -4,6 +4,8 @@ import (
 	"context"
 	"github.com/go-kratos/kratos/v2/log"
 	"time"
+	"usermate/internal/data/elasticsearch"
+	"usermate/internal/data/elasticsearch/mates"
 	"usermate/internal/data/model"
 )
 
@@ -113,17 +115,44 @@ type UserMateRepo interface {
 }
 
 type UserMateUsecase struct {
-	repo UserMateRepo
-	log  *log.Helper
+	repo     UserMateRepo
+	log      *log.Helper
+	esclient *elasticsearch.ES
 }
 
-func NewUserMateUsecase(repo UserMateRepo, logger log.Logger) *UserMateUsecase {
-	return &UserMateUsecase{repo: repo, log: log.NewHelper(logger)}
+func NewUserMateUsecase(repo UserMateRepo, logger log.Logger, es *elasticsearch.ES) *UserMateUsecase {
+	return &UserMateUsecase{repo: repo, log: log.NewHelper(logger), esclient: es}
 }
 
-func (uc *UserMateUsecase) AddUserMate(ctx context.Context, addmate AddMateRequest) (AddMateResponse, error) {
+func (uc *UserMateUsecase) AddUserMate(ctx context.Context, addmate AddMateRequest) (*AddMateResponse, error) {
 	uc.log.WithContext(ctx).Infof("AddUserMate: %v", addmate)
-	return uc.repo.AddUserMate(ctx, addmate)
+	addUsermateResponse, err := uc.repo.AddUserMate(ctx, addmate)
+	if err != nil {
+		return nil, err
+	}
+
+	addMateDTO := mates.AddMateDTO{
+		UserName:  addmate.UserName,
+		GroupId:   addmate.GroupId,
+		RealName:  addmate.RealName,
+		Tags:      addmate.Tags,
+		Birthday:  addmate.Birthday,
+		Hobby:     addmate.Hobby,
+		Nickname:  addmate.Nickname,
+		Images:    addmate.Images,
+		Age:       addmate.Age,
+		Province:  addmate.Province,
+		Sign:      addmate.Sign,
+		VideoUrl:  addmate.VideoUrl,
+		UpdatedAt: time.Now().Format("2006-01-02 03:04:05"),
+		CreatedAt: time.Now().Format("2006-01-02 03:04:05"),
+	}
+	err = uc.esclient.UserMateClient.AddUserMates(ctx, addMateDTO)
+	if err != nil {
+		//只做记录不影响搜索
+		uc.log.WithContext(ctx).Errorf("sync to es data failed %v", addMateDTO)
+	}
+	return &addUsermateResponse, nil
 }
 
 func (uc *UserMateUsecase) UserMateList(ctx context.Context, pageno int32, pagesize int32) ([]*model.UserMate, error) {
@@ -148,9 +177,14 @@ func (uc *UserMateUsecase) UpdateUserMate(ctx context.Context, id int32, updateM
 }
 
 // 按照用户名搜索用户
-func (uc *UserMateUsecase) SearchMates(ctx context.Context, username string) ([]*model.UserMate, error) {
+func (uc *UserMateUsecase) SearchMates(ctx context.Context, username string) ([]*mates.UserMateVo, error) {
 	uc.log.WithContext(ctx).Infof("user searching usermate %v ", username)
-	return uc.repo.SearchUserMate(ctx, username)
+	searchDTO := mates.SearchMateDTO{}
+	_, err := uc.esclient.UserMateClient.SearchMates(ctx, searchDTO)
+	if err != nil {
+		return nil, err
+	}
+	return []*mates.UserMateVo{}, nil
 }
 
 func (uc *UserMateUsecase) CreateOrderInfo(ctx context.Context, info *CreateOrderInfo) (id int64, order_id string, err error) {

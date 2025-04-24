@@ -12,6 +12,7 @@ import (
 	"usermate/internal/biz"
 	"usermate/internal/conf"
 	"usermate/internal/data"
+	"usermate/internal/data/elasticsearch"
 	"usermate/internal/server"
 	"usermate/internal/service"
 )
@@ -32,7 +33,12 @@ func wireApp(confServer *conf.Server, confData *conf.Data, kafka *conf.Kafka, el
 	greeterUsecase := biz.NewGreeterUsecase(greeterRepo, logger)
 	greeterService := service.NewGreeterService(greeterUsecase)
 	userMateRepo := data.NewUserMateRepo(dataData, logger)
-	userMateUsecase := biz.NewUserMateUsecase(userMateRepo, logger)
+	es, err := elasticsearch.NewES(elastic, logger)
+	if err != nil {
+		cleanup()
+		return nil, nil, err
+	}
+	userMateUsecase := biz.NewUserMateUsecase(userMateRepo, logger, es)
 	userMateService := service.NewUserMateService(userMateUsecase, logger)
 	grpcServer := server.NewGRPCServer(confServer, greeterService, userMateService, logger)
 	httpServer := server.NewHTTPServer(confServer, greeterService, userMateService, logger)
