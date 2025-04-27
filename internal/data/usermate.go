@@ -58,7 +58,7 @@ func (u UserMateRepo) AddUserMate(ctx context.Context, addmate biz.AddMateReques
 func (u UserMateRepo) UserMateList(ctx context.Context, pageno int32, pagesize int32) ([]*model.UserMate, error) {
 	u.log.WithContext(ctx).Infof("UserMateList")
 	var userMates []*model.UserMate
-	result := u.data.db.WithContext(ctx).Limit(int(pagesize)).Offset(int((pageno - 1) * pagesize)).Find(&userMates)
+	result := u.data.db.WithContext(ctx).Limit(int(pagesize)).Offset(int((pageno - 1) * pagesize)).Find(userMates)
 	if result.Error != nil {
 		return nil, result.Error
 	}

@@ -41,7 +41,9 @@ func wireApp(confServer *conf.Server, confData *conf.Data, kafka *conf.Kafka, el
 	userMateUsecase := biz.NewUserMateUsecase(userMateRepo, logger, es)
 	userMateService := service.NewUserMateService(userMateUsecase, logger)
 	grpcServer := server.NewGRPCServer(confServer, greeterService, userMateService, logger)
-	httpServer := server.NewHTTPServer(confServer, greeterService, userMateService, logger)
+	checkTokenUsecase := biz.NewCheckTokenUsecase(logger)
+	checkTokenService := service.NewCheckTokenService(logger, checkTokenUsecase)
+	httpServer := server.NewHTTPServer(confServer, greeterService, userMateService, checkTokenService, logger)
 	app := newApp(logger, grpcServer, httpServer)
 	return app, func() {
 		cleanup()
