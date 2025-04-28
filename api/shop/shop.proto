@@ -1,0 +1,43 @@
+syntax = "proto3";
+package shop.v1;
+
+import "google/api/annotations.proto";
+option go_package = "shop/api/shop/v1;v1";
+option java_multiple_files = true;
+option java_package = "dev.kratos.api.shop.v1";
+option java_outer_classname = "ShopV1";
+
+
+service Shop {
+  rpc AddShop(AddShopRequest)   returns (AddShopResponse){
+    option (google.api.http) = {
+      post: "/api/v1/shop/add"
+      body:"*"
+    };
+  };
+
+  rpc ShopList(ShopListRequest) returns (ShopListResponse) {
+
+    option (google.api.http) = {
+      post: "/api/v1/shop/list"
+      body:"*"
+    };
+  };
+}
+
+
+message ShopListRequest {
+
+}
+
+message ShopListResponse {
+
+}
+
+message AddShopRequest {
+
+}
+
+message AddShopResponse {
+
+}

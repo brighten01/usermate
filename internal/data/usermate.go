@@ -58,7 +58,7 @@ func (u UserMateRepo) AddUserMate(ctx context.Context, addmate biz.AddMateReques
 func (u UserMateRepo) UserMateList(ctx context.Context, pageno int32, pagesize int32) ([]*model.UserMate, error) {
 	u.log.WithContext(ctx).Infof("UserMateList")
 	var userMates []*model.UserMate
-	result := u.data.db.WithContext(ctx).Limit(int(pagesize)).Offset(int((pageno - 1) * pagesize)).Find(userMates)
+	result := u.data.db.WithContext(ctx).Limit(int(pagesize)).Offset(int((pageno - 1) * pagesize)).Find(&userMates)
 	if result.Error != nil {
 		return nil, result.Error
 	}
@@ -86,7 +86,23 @@ func (u UserMateRepo) DeleteUserMate(ctx context.Context, id int32) error {
 // 更新用户
 func (u UserMateRepo) UpdateUserMate(ctx context.Context, id int32, updateMate *biz.UpdateMateRequest) error {
 	u.log.WithContext(ctx).Infof("UpdateUserMate: %v", id)
-	result := u.data.db.WithContext(ctx).Model(&model.UserMate{}).Where("id = ?", id).Updates(updateMate)
+	var UserMate *model.UserMate
+	UserMate = &model.UserMate{
+		UserName:  updateMate.UserName,
+		GroupId:   updateMate.GroupId,
+		RealName:  updateMate.RealName,
+		Tags:      updateMate.Tags,
+		Birthday:  updateMate.Birthday,
+		Hobby:     updateMate.Hobby,
+		Nickname:  updateMate.Nickname,
+		Images:    updateMate.Images,
+		Age:       updateMate.Age,
+		Province:  updateMate.Province,
+		Sign:      updateMate.Sign,
+		VideoUrl:  updateMate.VideoUrl,
+		UpdatedAt: time.Now(),
+	}
+	result := u.data.db.WithContext(ctx).Model(&model.UserMate{}).Where("id = ?", id).Updates(UserMate)
 	return result.Error
 }
 

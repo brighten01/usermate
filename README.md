@@ -165,5 +165,10 @@ PUT orders/_mappings
     }
 }
 ```
+
 servies 设计方法， 在data 目录中使用多个服务，例如建立services  文件夹，然后把每个服务都放到不同的文件夹，每个文件夹一个服务，最后给biz逻辑调用
 汇总一个文件 Newservices 将每个服务实例化，在使用wire.NewSet(NewServices) 进行依赖注入
+
+**定时任务**
+
+https://blog.csdn.net/qq_30614345/article/details/130955006
