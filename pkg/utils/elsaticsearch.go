@@ -106,7 +106,7 @@ func NewOrderESClient(esconf *conf.ElasticSearch, logger log.Logger) (*ESClient,
 
 	client, err := elastic.NewClient(options...)
 	if err != nil {
-		return nil, fmt.Errorf("%w: %v", common.ErrClientCreation, err)
+		return nil, common.ErrClientCreation
 	}
 
 	return &ESClient{

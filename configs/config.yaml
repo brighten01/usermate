@@ -16,7 +16,7 @@ data:
     write_timeout: 0.2s
     dial_timeout: 3s
 log:
-  filename: "./log/servicelog/usermate-service.log"
+  filename: "./log/usermate/usermate-service.log"
   max_size: 1
   max_backup: 5
   max_age: 10
